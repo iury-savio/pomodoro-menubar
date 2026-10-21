@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   sync:
+    if: github.repository == 'iurysavio/pomodoro-menubar'
     runs-on: ubuntu-latest
     steps:
       - name: Check out primary repository
@@ -27,15 +28,13 @@ jobs:
           fetch-depth: 0
 
       - name: Push branches and tags to mirror
-        env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_REPO_TOKEN }}
-        run: |
-          if [ -z "$MIRROR_TOKEN" ]; then
-            echo "MIRROR_REPO_TOKEN secret is missing."
-            exit 1
-          fi
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MIRROR_DEPLOY_KEY }}
 
-          git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/iury-savio/pomodoro-menubar.git"
+      - name: Push branches and tags to mirror
+        run: |
+          git remote add mirror "git@github.com:iury-savio/pomodoro-menubar.git"
           git push mirror --all
           git push mirror --tags
 
@@ -44,6 +43,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MIRROR_REPO_TOKEN }}
           GH_REPO: iury-savio/pomodoro-menubar
+          SOURCE_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_NAME: ${{ github.event.release.name }}
           RELEASE_BODY: ${{ github.event.release.body }}
@@ -54,7 +54,7 @@ jobs:
           trap 'rm -rf "$assets_dir"' EXIT
 
           gh release download "$RELEASE_TAG" \
-            --repo "${GITHUB_REPOSITORY}" \
+            --repo "$SOURCE_REPO" \
             --dir "$assets_dir" || true
 
           args=("$RELEASE_TAG" --repo "$GH_REPO" --title "$RELEASE_NAME" --notes "$RELEASE_BODY")
