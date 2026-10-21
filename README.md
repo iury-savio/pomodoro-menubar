@@ -20,12 +20,20 @@ A lightweight native macOS Pomodoro timer. Keep the countdown in the menu bar, o
 
 ## Run
 
+### Download the macOS app
+
+Download `Pomodoro-macOS-arm64.zip` from the [latest GitHub Release](https://github.com/iurysavio/pomodoro-menubar/releases/latest), unzip it, then open `Pomodoro.app`. The release build targets Apple silicon Macs and requires macOS 14 or later.
+
+### Build from source
+
 ```sh
+git clone https://github.com/iurysavio/pomodoro-menubar.git
+cd pomodoro-menubar
 ./scripts/build-app.sh
 open build/Pomodoro.app
 ```
 
-The app appears in the menu bar. Use **Show floating timer** in the menu-bar panel to open the always-on-top timer. Open **Settings** to change focus and break lengths.
+The app appears in the menu bar. Use **Show floating timer** in the menu-bar panel to open the always-on-top timer. Open **Settings** to change focus and break lengths. Building from source creates `build/Pomodoro.app`; it is not checked into the repository.
 
 For local use, the unsigned app may require approval in **System Settings → Privacy & Security**. Signing and notarization are not included in this source build.
 
