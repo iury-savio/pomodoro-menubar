@@ -33,7 +33,7 @@ cd pomodoro-menubar
 open build/Pomodoro.app
 ```
 
-The app appears in the menu bar. Use **Show floating timer** in the menu-bar panel to open the always-on-top timer. Open **Settings** to change focus and break lengths. Building from source creates `build/Pomodoro.app`; it is not checked into the repository.
+The app appears in the menu bar. Use **Show floating timer** in the menu-bar panel to open the always-on-top timer. Click the sliders icon in the panel to open timer settings. Building from source creates `build/Pomodoro.app`; it is not checked into the repository.
 
 For local use, the unsigned app may require approval in **System Settings → Privacy & Security**. Signing and notarization are not included in this source build.
 

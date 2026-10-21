@@ -18,7 +18,6 @@ private enum PomodoroPalette {
 struct MenuBarPanel: View {
     @ObservedObject var timer: PomodoroTimer
     @Environment(\.openWindow) private var openWindow
-    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(spacing: 16) {
@@ -28,7 +27,7 @@ struct MenuBarPanel: View {
                     .tracking(1.3)
                     .foregroundStyle(PomodoroPalette.muted)
                 Spacer()
-                Button { openSettings() } label: {
+                Button { openWindow(id: "settings") } label: {
                     Image(systemName: "slider.horizontal.3")
                 }
                 .buttonStyle(.plain)
