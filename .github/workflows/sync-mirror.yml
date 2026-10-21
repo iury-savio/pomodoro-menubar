@@ -29,10 +29,10 @@ jobs:
 
       - name: Push branches and tags to mirror
         env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_REPO_TOKEN }}
+          MIRROR_TOKEN: ${{ secrets.MIRROR_GH_TOKEN }}
         run: |
           if [ -z "$MIRROR_TOKEN" ]; then
-            echo "MIRROR_REPO_TOKEN secret is missing."
+            echo "MIRROR_GH_TOKEN secret is missing."
             exit 1
           fi
 
