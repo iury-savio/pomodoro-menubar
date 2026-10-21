@@ -173,39 +173,107 @@ struct SettingsView: View {
     @ObservedObject var timer: PomodoroTimer
 
     var body: some View {
-        Form {
-            Section("Timer durations") {
-                durationRow("Focus", detail: "Work session", value: $timer.focusMinutes)
-                durationRow("Short break", detail: "Between focus sessions", value: $timer.shortBreakMinutes)
-                durationRow("Long break", detail: "After every four focus sessions", value: $timer.longBreakMinutes)
+        VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: 6) {
+                Label("TIMER SETTINGS", systemImage: "slider.horizontal.3")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .tracking(1.3)
+                    .foregroundStyle(PomodoroPalette.muted)
+                Text("Set your rhythm")
+                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                    .foregroundStyle(PomodoroPalette.text)
+                Text("Choose how long each part of your Pomodoro cycle lasts.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(PomodoroPalette.muted)
             }
 
-            Text("Durations are saved automatically. Changes apply to the next timer reset or phase.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 10) {
+                durationRow(mode: .focus, title: "Focus session", detail: "Time for concentrated work", value: $timer.focusMinutes)
+                durationRow(mode: .shortBreak, title: "Short break", detail: "A quick pause between sessions", value: $timer.shortBreakMinutes)
+                durationRow(mode: .longBreak, title: "Long break", detail: "After every four focus sessions", value: $timer.longBreakMinutes)
+            }
+
+            Label("Changes save automatically and apply to the next reset or phase.", systemImage: "checkmark.circle.fill")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(PomodoroPalette.muted)
         }
-        .padding(20)
-        .frame(width: 390)
+        .padding(26)
+        .frame(width: 500, height: 430, alignment: .topLeading)
+        .background(PomodoroPalette.background)
+        .preferredColorScheme(.dark)
         .onChange(of: timer.focusMinutes) { _, _ in timer.settingsChanged() }
         .onChange(of: timer.shortBreakMinutes) { _, _ in timer.settingsChanged() }
         .onChange(of: timer.longBreakMinutes) { _, _ in timer.settingsChanged() }
     }
 
-    private func durationRow(_ title: String, detail: String, value: Binding<Int>) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 3) {
+    private func durationRow(
+        mode: PomodoroMode,
+        title: String,
+        detail: String,
+        value: Binding<Int>
+    ) -> some View {
+        HStack(spacing: 16) {
+            Image(systemName: mode.symbol)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(PomodoroPalette.color(for: mode))
+                .frame(width: 40, height: 40)
+                .background(PomodoroPalette.color(for: mode).opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                Text(detail).font(.caption).foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(PomodoroPalette.text)
+                Text(detail)
+                    .font(.system(size: 11))
+                    .foregroundStyle(PomodoroPalette.muted)
             }
-            Spacer()
-            Stepper(value: value, in: 1...90) {
-                Text("\(value.wrappedValue) min")
+
+            Spacer(minLength: 12)
+
+            HStack(spacing: 0) {
+                Button {
+                    value.wrappedValue = max(1, value.wrappedValue - 1)
+                } label: {
+                    Image(systemName: "minus")
+                        .font(.system(size: 11, weight: .bold))
+                        .frame(width: 32, height: 34)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(value.wrappedValue <= 1)
+                .help("Decrease by one minute")
+
+                Text("\(value.wrappedValue)")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .monospacedDigit()
-                    .frame(width: 58, alignment: .trailing)
+                    .foregroundStyle(PomodoroPalette.text)
+                    .frame(minWidth: 32)
+
+                Button {
+                    value.wrappedValue = min(90, value.wrappedValue + 1)
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 11, weight: .bold))
+                        .frame(width: 32, height: 34)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(value.wrappedValue >= 90)
+                .help("Increase by one minute")
             }
-            .fixedSize()
+            .foregroundStyle(PomodoroPalette.muted)
+            .background(PomodoroPalette.background, in: RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(PomodoroPalette.card, lineWidth: 1))
+
+            Text("min")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(PomodoroPalette.muted)
+                .frame(width: 24, alignment: .leading)
         }
-        .padding(.vertical, 3)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, minHeight: 66)
+        .background(PomodoroPalette.card, in: RoundedRectangle(cornerRadius: 14))
     }
 }
 

@@ -29,7 +29,7 @@ struct PomodoroMenuBarApp: App {
         Window("Pomodoro Settings", id: "settings") {
             SettingsView(timer: timer)
         }
-        .defaultSize(width: 410, height: 250)
+        .defaultSize(width: 500, height: 430)
         .windowResizability(.contentSize)
     }
 }
