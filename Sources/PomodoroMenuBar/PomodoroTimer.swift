@@ -1,4 +1,5 @@
 import Combine
+import AppKit
 import Foundation
 
 enum PomodoroMode: String, CaseIterable, Identifiable {
@@ -43,6 +44,9 @@ final class PomodoroTimer: ObservableObject {
     @Published var focusMinutes: Int { didSet { saveSettings() } }
     @Published var shortBreakMinutes: Int { didSet { saveSettings() } }
     @Published var longBreakMinutes: Int { didSet { saveSettings() } }
+    @Published var completionSoundEnabled: Bool {
+        didSet { defaults.set(completionSoundEnabled, forKey: "completionSoundEnabled") }
+    }
 
     private var endDate: Date?
     private var ticker: Timer?
@@ -55,6 +59,7 @@ final class PomodoroTimer: ObservableObject {
         focusMinutes = focus
         shortBreakMinutes = shortBreak
         longBreakMinutes = longBreak
+        completionSoundEnabled = UserDefaults.standard.object(forKey: "completionSoundEnabled") as? Bool ?? true
         remainingSeconds = focus * 60
         restoreTimerState()
     }
@@ -122,19 +127,24 @@ final class PomodoroTimer: ObservableObject {
         persistTimerState()
     }
 
+    func playCompletionSound() {
+        guard completionSoundEnabled else { return }
+        NSSound(named: NSSound.Name("Glass"))?.play()
+    }
+
     private func refresh() {
         guard isRunning, let endDate else { return }
         let seconds = Int(ceil(endDate.timeIntervalSinceNow))
         if seconds <= 0 {
             remainingSeconds = 0
-            advanceMode()
+            advanceMode(completedNaturally: true)
         } else {
             remainingSeconds = seconds
             persistTimerState()
         }
     }
 
-    private func advanceMode() {
+    private func advanceMode(completedNaturally: Bool = false) {
         ticker?.invalidate()
         ticker = nil
         isRunning = false
@@ -143,9 +153,12 @@ final class PomodoroTimer: ObservableObject {
         if mode == .focus {
             completedFocusSessions += 1
             mode = completedFocusSessions.isMultiple(of: 4) ? .longBreak : .shortBreak
-            NotificationCenter.default.post(name: .pomodoroPhaseCompleted, object: mode)
         } else {
             mode = .focus
+        }
+
+        if completedNaturally {
+            playCompletionSound()
             NotificationCenter.default.post(name: .pomodoroPhaseCompleted, object: mode)
         }
 
@@ -193,7 +206,7 @@ final class PomodoroTimer: ObservableObject {
                 startTicker()
             } else {
                 remainingSeconds = 0
-                advanceMode()
+                advanceMode(completedNaturally: true)
             }
         } else if defaults.object(forKey: "remainingSeconds") != nil {
             remainingSeconds = max(0, defaults.integer(forKey: "remainingSeconds"))

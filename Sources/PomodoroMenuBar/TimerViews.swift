@@ -193,6 +193,31 @@ struct SettingsView: View {
                 durationRow(mode: .longBreak, title: "Long break", detail: "After every four focus sessions", value: $timer.longBreakMinutes)
             }
 
+            HStack(spacing: 12) {
+                Image(systemName: "speaker.wave.2.fill")
+                    .foregroundStyle(PomodoroPalette.color(for: .focus))
+                    .frame(width: 40)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Completion sound")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(PomodoroPalette.text)
+                    Text("Play a chime when each period ends")
+                        .font(.system(size: 11))
+                        .foregroundStyle(PomodoroPalette.muted)
+                }
+                Spacer()
+                Button("Test") { timer.playCompletionSound() }
+                    .buttonStyle(.bordered)
+                    .disabled(!timer.completionSoundEnabled)
+                Toggle("Completion sound", isOn: $timer.completionSoundEnabled)
+                    .labelsHidden()
+                    .tint(PomodoroPalette.color(for: .focus))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: 66)
+            .background(PomodoroPalette.card, in: RoundedRectangle(cornerRadius: 14))
+
             Label("Changes save automatically and apply to the next reset or phase.", systemImage: "checkmark.circle.fill")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(PomodoroPalette.muted)

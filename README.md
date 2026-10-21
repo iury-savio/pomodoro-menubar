@@ -10,6 +10,7 @@ A lightweight native macOS Pomodoro timer. Keep the countdown in the menu bar, o
 - Start, pause, reset, and skip controls.
 - Optional floating timer window that stays on top and can join all Spaces.
 - macOS notification when a phase ends.
+- Audible completion chime with an on/off switch and test button in settings.
 - Remembers the active timer across app launches.
 - No third-party dependencies.
 
