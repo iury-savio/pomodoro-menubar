@@ -36,6 +36,9 @@ jobs:
             exit 1
           fi
 
+          # checkout persists the GITHUB_TOKEN as a host-wide extra header.
+          # Remove it so the mirror's cross-account credential is used instead.
+          git config --local --unset-all http.https://github.com/.extraheader || true
           git remote add mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/iury-savio/pomodoro-menubar.git"
           git push mirror --all
           git push mirror --tags
