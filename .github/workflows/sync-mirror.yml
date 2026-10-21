@@ -43,7 +43,7 @@ jobs:
       - name: Copy published release and assets
         if: github.event_name == 'release'
         env:
-          GH_TOKEN: ${{ secrets.MIRROR_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.MIRROR_GH_TOKEN }}
           GH_REPO: iury-savio/pomodoro-menubar
           SOURCE_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
